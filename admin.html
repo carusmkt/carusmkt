@@ -1,1 +1,77 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><meta name="theme-color" content="#f7f6f3"><title>Estúdio editorial — CarusMKT</title><link rel="stylesheet" href="assets/css/style.css?v=20260906-3"><link rel="stylesheet" href="assets/css/overrides.css?v=20260906-3"><meta http-equiv="Cache-Control" content="no-cache"></head><body data-page="admin"><script src="assets/js/app.js?v=20260906-3"></script></body></html>
+<!doctype html>
+<html lang="pt-BR" class="admin-locked">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#f7f6f3">
+  <meta http-equiv="Cache-Control" content="no-cache">
+  <title>Estúdio editorial — CarusMKT</title>
+  <link rel="stylesheet" href="assets/css/style.css?v=20260906-3">
+  <link rel="stylesheet" href="assets/css/overrides.css?v=20260906-3">
+  <style>
+    html.admin-locked body { overflow: hidden; }
+    html.admin-locked body > :not(#admin-pin-gate) {
+      filter: blur(8px);
+      pointer-events: none;
+      user-select: none;
+    }
+    #admin-pin-gate {
+      position: fixed;
+      z-index: 10000;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(19, 18, 30, .34);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+    }
+    #admin-pin-gate .pin-card {
+      width: min(100%, 380px);
+      padding: 32px;
+      border-radius: 20px;
+      background: #f7f6f3;
+      box-shadow: 0 24px 70px rgba(14, 13, 25, .22);
+      color: #211f2b;
+      font-family: inherit;
+      text-align: center;
+    }
+    #admin-pin-gate h1 { margin: 0 0 8px; font-size: 25px; line-height: 1.2; }
+    #admin-pin-gate p { margin: 0 0 22px; color: #625e6a; line-height: 1.5; }
+    #admin-pin-gate label { display: block; margin-bottom: 8px; font-weight: 700; text-align: left; }
+    #admin-pin-gate input {
+      width: 100%;
+      height: 52px;
+      padding: 0 14px;
+      border: 1px solid #ccc8d0;
+      border-radius: 10px;
+      background: #fff;
+      color: #211f2b;
+      font: inherit;
+      font-size: 22px;
+      letter-spacing: .35em;
+      text-align: center;
+    }
+    #admin-pin-gate input:focus { outline: 3px solid #aa82c8; outline-offset: 2px; }
+    #admin-pin-gate button {
+      width: 100%;
+      min-height: 48px;
+      margin-top: 16px;
+      border: 0;
+      border-radius: 10px;
+      background: #392842;
+      color: #fff;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    #admin-pin-gate button:disabled { opacity: .65; cursor: wait; }
+    #admin-pin-error { min-height: 22px; margin-top: 10px; color: #9b2448; font-size: 14px; }
+  </style>
+</head>
+<body data-page="admin">
+  <script src="assets/js/app.js?v=20260906-3"></script>
+  <script src="assets/js/admin-gate.js?v=20260916-1"></script>
+</body>
+</html>
