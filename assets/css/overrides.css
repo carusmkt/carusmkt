@@ -1227,3 +1227,42 @@ html[data-theme="dark"] .values-wallet-card-2 { color: var(--paper); }
   .values-wallet,
   .values-wallet-card { animation: none; transition: none; }
 }
+.admin-lock {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+.admin-lock-card {
+  width: min(100%, 420px);
+  display: grid;
+  gap: 14px;
+  padding: clamp(24px, 6vw, 42px);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+}
+.admin-lock-brand img { display: block; width: 155px; max-width: 100%; }
+.admin-lock-card h1 { font-size: clamp(2rem, 6vw, 2.7rem); }
+.admin-lock-card p { margin: 0; font-size: 13px; }
+.admin-lock-card label { font-size: 12px; font-weight: 700; }
+.admin-lock-card input {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink);
+  letter-spacing: .25em;
+}
+.admin-lock-card .btn { width: 100%; }
+.admin-lock-card small { min-height: 1.5em; color: var(--green); }
+.admin-logout {
+  padding: 8px 12px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font-size: 11px;
+}
