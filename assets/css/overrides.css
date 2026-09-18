@@ -479,6 +479,9 @@ html[data-theme="dark"] .status-pill.published { color: #9bd0b2; }
 .admin-delete-btn .icon { width: 13px; }
 .admin-feedback { min-height: 18px; margin: 9px 0 0; color: var(--green); text-align: center; font-size: 9px; }
 .local-note { margin: 8px 0 0; color: var(--sage); text-align: center; font-size: 8px; line-height: 1.5; }
+.github-connection .settings-input { margin-bottom: 10px; }
+.github-connection .text-button { min-height: 30px; }
+.admin-save-btn:disabled { opacity: .6; cursor: wait; }
 
 .blog-article { margin-top: 70px; }
 .blog-article > .h1 { margin: 12px 0 18px; font-size: clamp(2.5rem,6vw,5rem); }
