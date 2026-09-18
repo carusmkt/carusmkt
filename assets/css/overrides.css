@@ -461,6 +461,9 @@ html[data-theme="dark"] .status-pill.published { color: #9bd0b2; }
 .settings-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .settings-row .settings-label { margin: 0; }
 .text-button { padding: 3px 0; display: inline-flex; align-items: center; gap: 4px; border: 0; background: transparent; color: var(--green) !important; font-size: 11px; font-weight: 800; }
+.github-connection #disconnect-github { margin-left: 12px; }
+.github-connection button[hidden] { display: none !important; }
+.github-connection button:disabled { opacity: .55; cursor: wait; }
 .text-button .icon { width: 12px; }
 .settings-help { margin: 7px 0 10px; color: var(--sage); font-size: 11px; line-height: 1.5; }
 .source-list { display: grid; gap: 7px; }

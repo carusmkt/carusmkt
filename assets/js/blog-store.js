@@ -1,4 +1,4 @@
-// Public articles live in the repository. The GitHub token exists only in this page's memory.
+// Public articles live in the repository. A validated admin token may be saved in this browser.
 window.CarusBlogStore = (() => {
   const owner = 'carusmkt';
   const repo = 'carusmkt';
@@ -6,14 +6,16 @@ window.CarusBlogStore = (() => {
   const postsPath = 'assets/data/posts.json';
   const apiRoot = `https://api.github.com/repos/${owner}/${repo}/contents/`;
   const requestTimeoutMs = 25000;
+  const tokenStorageKey = 'carus-github-token-v1';
   let token = '';
+  let connectionVersion = 0;
 
   const encode = value => btoa(Array.from(new TextEncoder().encode(value), byte => String.fromCharCode(byte)).join(''));
   const decode = value => new TextDecoder().decode(Uint8Array.from(atob(value.replace(/\s/g, '')), char => char.charCodeAt(0)));
   const apiUrl = (path, withRef = true) => `${apiRoot}${path.split('/').map(encodeURIComponent).join('/')}${withRef ? `?ref=${branch}` : ''}`;
-  const headers = () => ({
+  const headers = (value = token) => ({
     Accept: 'application/vnd.github+json',
-    Authorization: `Bearer ${token}`,
+    Authorization: `Bearer ${value}`,
     'X-GitHub-Api-Version': '2022-11-28'
   });
   const parsePosts = value => {
@@ -44,6 +46,47 @@ window.CarusBlogStore = (() => {
     const response = await fetch(`assets/data/posts.json?ts=${Date.now()}`, { cache: 'no-store' });
     if (!response.ok) throw new Error('Não foi possível carregar os artigos publicados.');
     return parsePosts(await response.json());
+  }
+
+  async function verifyToken(value) {
+    const response = await request(apiUrl(postsPath), { headers: headers(value), cache: 'no-store' });
+    if (!response.ok) throw new Error(messageFor(response));
+  }
+
+  async function connect(value) {
+    const candidate = value.trim();
+    if (!candidate) throw new Error('Informe o fine-grained token para conectar ao GitHub.');
+    const version = ++connectionVersion;
+    await verifyToken(candidate);
+    if (version !== connectionVersion) throw new Error('A conexão foi alterada. Tente novamente.');
+    token = candidate;
+    try {
+      localStorage.setItem(tokenStorageKey, candidate);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  async function restoreConnection() {
+    let saved = '';
+    try { saved = localStorage.getItem(tokenStorageKey) || ''; } catch {}
+    if (!saved) return false;
+    const version = connectionVersion;
+    await verifyToken(saved);
+    if (version !== connectionVersion) return false;
+    token = saved;
+    return true;
+  }
+
+  function disconnect() {
+    connectionVersion++;
+    token = '';
+    try { localStorage.removeItem(tokenStorageKey); } catch {}
+  }
+
+  function hasSavedToken() {
+    try { return !!localStorage.getItem(tokenStorageKey); } catch { return false; }
   }
 
   async function readFile(path) {
@@ -98,5 +141,5 @@ window.CarusBlogStore = (() => {
     await putFile(postsPath, encode(JSON.stringify(posts.filter(post => post.id !== id), null, 2) + '\n'), `Remover artigo do blog: ${id}`, current.sha);
   }
 
-  return { loadPublicPosts, publish, unpublish, setToken(value) { token = value.trim(); }, hasToken() { return !!token; } };
+  return { loadPublicPosts, publish, unpublish, connect, restoreConnection, disconnect, hasSavedToken, hasToken() { return !!token; } };
 })();
