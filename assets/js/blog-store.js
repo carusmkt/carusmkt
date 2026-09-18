@@ -5,6 +5,7 @@ window.CarusBlogStore = (() => {
   const branch = 'main';
   const postsPath = 'assets/data/posts.json';
   const apiRoot = `https://api.github.com/repos/${owner}/${repo}/contents/`;
+  const requestTimeoutMs = 25000;
   let token = '';
 
   const encode = value => btoa(Array.from(new TextEncoder().encode(value), byte => String.fromCharCode(byte)).join(''));
@@ -26,6 +27,18 @@ window.CarusBlogStore = (() => {
     if (response.status === 409 || response.status === 422) return 'O repositório mudou durante a publicação. Recarregue o admin e tente novamente.';
     return `O GitHub não aceitou a operação (HTTP ${response.status}).`;
   };
+  const request = async (url, options = {}) => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), requestTimeoutMs);
+    try {
+      return await fetch(url, { ...options, signal: controller.signal });
+    } catch (error) {
+      if (controller.signal.aborted) throw new Error('O GitHub demorou demais para responder. Confira se o artigo foi publicado antes de tentar novamente.');
+      throw error;
+    } finally {
+      clearTimeout(timeout);
+    }
+  };
 
   async function loadPublicPosts() {
     const response = await fetch(`assets/data/posts.json?ts=${Date.now()}`, { cache: 'no-store' });
@@ -35,7 +48,7 @@ window.CarusBlogStore = (() => {
 
   async function readFile(path) {
     if (!token) throw new Error('Informe o fine-grained token para publicar no GitHub.');
-    const response = await fetch(apiUrl(path), { headers: headers(), cache: 'no-store' });
+    const response = await request(apiUrl(path), { headers: headers(), cache: 'no-store' });
     if (response.status === 404) return { sha: null, content: null };
     if (!response.ok) throw new Error(messageFor(response));
     const file = await response.json();
@@ -46,7 +59,7 @@ window.CarusBlogStore = (() => {
   async function putFile(path, base64, message, sha = null) {
     const body = { message, content: base64, branch };
     if (sha) body.sha = sha;
-    const response = await fetch(apiUrl(path, false), {
+    const response = await request(apiUrl(path, false), {
       method: 'PUT',
       headers: { ...headers(), 'Content-Type': 'application/json' },
       body: JSON.stringify(body)

@@ -318,12 +318,16 @@ html[data-theme="dark"] .brand-logo { filter: brightness(0) invert(1) opacity(.9
 body[data-page="admin"] {
   --admin-sidebar: 290px;
   --admin-settings: 300px;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
   min-width: 320px;
   overflow: hidden;
   background: var(--paper);
 }
 
-.admin-studio { min-height: 100vh; }
+.admin-studio { height: 100%; min-height: 0; display: flex; flex-direction: column; }
 .admin-studio button,
 .admin-studio input,
 .admin-studio textarea,
@@ -359,7 +363,7 @@ html[data-theme="dark"] .admin-brand img { filter: brightness(0) invert(1) opaci
 .admin-icon-btn:hover,.admin-lang:hover { background: var(--mist); }
 .admin-library-toggle { display: none; }
 
-.admin-workspace { height: calc(100vh - 68px); display: grid; grid-template-columns: var(--admin-sidebar) minmax(0, 1fr); }
+.admin-workspace { flex: 1; min-height: 0; display: grid; grid-template-columns: var(--admin-sidebar) minmax(0, 1fr); }
 .admin-sidebar { min-width: 0; display: flex; flex-direction: column; border-right: 1px solid var(--line); background: var(--card); overflow: hidden; }
 .admin-sidebar-head { padding: 23px 19px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .admin-kicker { display: block; margin-bottom: 4px; color: var(--sage); font-size: 9px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
@@ -536,8 +540,9 @@ html[data-theme="dark"] .status-pill.published { color: #9bd0b2; }
   .admin-editor-main { padding-inline: 24px; }
 }
 @media (max-width: 960px) {
-  body[data-page="admin"] { overflow: auto; }
-  .admin-workspace { height: auto; min-height: calc(100vh - 68px); grid-template-columns: 1fr; }
+  body[data-page="admin"] { position: static; height: auto; overflow: auto; }
+  .admin-studio { height: auto; min-height: 100dvh; }
+  .admin-workspace { flex: none; min-height: calc(100dvh - 68px); grid-template-columns: 1fr; }
   .admin-library-toggle { display: grid; }
   .admin-sidebar { position: fixed; z-index: 30; inset: 68px auto 0 0; width: min(330px,88vw); display: flex; box-shadow: 20px 0 50px #0003; transform: translateX(-105%); transition: transform .22s ease; }
   .admin-sidebar.mobile-open { transform: translateX(0); }
@@ -1229,4 +1234,33 @@ html[data-theme="dark"] .values-wallet-card-2 { color: var(--paper); }
 @media (prefers-reduced-motion: reduce) {
   .values-wallet,
   .values-wallet-card { animation: none; transition: none; }
+}
+
+/* Blog cards and article reader. */
+.blog-grid { align-items: stretch; }
+.post-card { min-width: 0; }
+.post-card-link { display: flex; flex-direction: column; height: 100%; }
+.post-card-link:focus-visible { outline: 3px solid var(--green); outline-offset: -3px; border-radius: 18px; }
+.post-card .post-thumb { flex: none; width: 100%; height: auto; aspect-ratio: 16 / 9; overflow: hidden; }
+.post-card .post-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.post-card-body { min-width: 0; flex: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 24px; }
+.post-card .post-date { line-height: 1.5; }
+.post-card h2 { max-width: 100%; font-size: clamp(1.5rem, 2.4vw, 2rem); line-height: 1.16; overflow-wrap: anywhere; }
+.post-card p { max-width: 100%; margin: 0; font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+.post-card-action { margin-top: auto; pointer-events: none; }
+.post-card-link:hover .post-card-action { border-color: var(--green); color: var(--green); }
+
+.post-dialog { width: min(860px, calc(100% - 32px)); max-width: none; max-height: min(90vh, 900px); padding: 0; border: 1px solid var(--line); border-radius: 22px; background: var(--card); color: var(--ink); box-shadow: 0 28px 90px #0005; overflow-y: auto; }
+.post-dialog::backdrop { background: #0d1511ae; backdrop-filter: blur(5px); }
+.post-dialog-header { position: sticky; top: 0; z-index: 1; display: flex; justify-content: flex-end; padding: 14px 20px 0; background: var(--card); }
+.post-dialog-close { background: var(--mist); flex: none; }
+.post-dialog-content { padding: 0 clamp(22px, 5vw, 56px) 44px; }
+.post-dialog .blog-article { max-width: none; margin: 0; }
+.post-dialog .blog-article > .h1 { font-size: clamp(2.2rem, 6vw, 4.5rem); line-height: 1.1; overflow-wrap: anywhere; }
+.post-dialog .blog-article-cover { display: block; height: auto; max-height: 460px; }
+.post-dialog .article-sources { padding-bottom: 0; }
+@media (max-width: 600px) {
+  .post-card-body { padding: 20px; }
+  .post-dialog { max-height: 94vh; border-radius: 16px; }
+  .post-dialog-header { padding: 10px 12px 0; }
 }

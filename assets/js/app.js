@@ -63,7 +63,11 @@ const servicesPage = () => `<main><section class="page-hero services-page-hero">
     }); flush();closeList();return html;
   };
   const sourcesMarkup = (sources=[]) => sources.length ? `<section class="article-sources"><h2>${lang==='pt'?'Fontes consultadas':'Sources'}</h2><ol>${sources.map(source=>{const url=typeof source==='string'?source:source.url; if(!/^https?:\/\//i.test(url||''))return ''; let label=url; try{label=new URL(url).hostname.replace(/^www\./,'');}catch{} return `<li><a href="${escapeHTML(url)}" target="_blank" rel="noopener noreferrer">${escapeHTML(label)}</a></li>`;}).join('')}</ol></section>` : '';
-  const blog = () => { const posts = (publicPosts || []).filter(p=>p.published).sort((a,b)=>new Date(b.date)-new Date(a.date)); return `<main><section class="page-hero"><div class="shell"><div class="eyebrow">Blog</div><h1 class="h1">${lang==='pt'?'Ideias que ajudam marcas a crescer.':'Ideas that help brands grow.'}</h1><p class="muted">${lang==='pt'?'Estratégia, conteúdo, marca e o que realmente importa no marketing digital.':'Strategy, content, brand and what really matters in digital marketing.'}</p></div></section><section><div class="shell blog-grid">${posts.length ? posts.map(p=>`<article class="post-card"><div class="post-thumb">${p.image?`<img src="${escapeHTML(p.image)}" alt="">`:`${ico('pen')}`}</div><article><div class="post-date">${escapeHTML(p.category||'CarusMKT')} · ${new Date(p.date).toLocaleDateString(lang==='pt'?'pt-BR':'en-US',{day:'2-digit',month:'long',year:'numeric'})}</div><h2>${escapeHTML(p.title)}</h2><p class="muted">${escapeHTML(p.excerpt || p.content.slice(0,145))}</p><a class="btn btn-ghost" href="blog.html#${escapeHTML(p.id)}" data-post="${escapeHTML(p.id)}">${lang==='pt'?'Ler artigo':'Read article'} ${ico('arrow')}</a></article></article>`).join(''):`<article class="post-card" style="grid-column:1/-1"><article><div class="post-date">CarusMKT</div><h2>${publicPostsError?(lang==='pt'?'Não foi possível carregar os artigos. Tente atualizar a página.':'Could not load articles. Please refresh the page.'):(publicPosts===null?(lang==='pt'?'Carregando artigos…':'Loading articles…'):(lang==='pt'?'Em breve, novas ideias por aqui.':'New ideas are coming soon.'))}</h2></article></article>`}</div><div id="post-reader"></div></section></main>` };
+  const blog = () => {
+    const posts = (publicPosts || []).filter(p => p.published).sort((a,b) => new Date(b.date)-new Date(a.date));
+    const postDate = p => new Date(p.date).toLocaleDateString(lang==='pt'?'pt-BR':'en-US',{day:'2-digit',month:'long',year:'numeric'});
+    return `<main><section class="page-hero"><div class="shell"><div class="eyebrow">Blog</div><h1 class="h1">${lang==='pt'?'Ideias que ajudam marcas a crescer.':'Ideas that help brands grow.'}</h1><p class="muted">${lang==='pt'?'Estratégia, conteúdo, marca e o que realmente importa no marketing digital.':'Strategy, content, brand and what really matters in digital marketing.'}</p></div></section><section><div class="shell blog-grid">${posts.length ? posts.map(p=>`<article class="post-card"><a class="post-card-link" href="blog.html#${encodeURIComponent(p.id)}" data-post="${escapeHTML(p.id)}" aria-label="${lang==='pt'?'Ler artigo:':'Read article:'} ${escapeHTML(p.title)}"><div class="post-thumb">${p.image?`<img src="${escapeHTML(p.image)}" alt="" loading="lazy">`:ico('pen')}</div><div class="post-card-body"><div class="post-date">${escapeHTML(p.category||'CarusMKT')} · ${postDate(p)}</div><h2>${escapeHTML(p.title)}</h2><p class="muted">${escapeHTML(p.excerpt || p.content.slice(0,145))}</p><span class="btn btn-ghost post-card-action">${lang==='pt'?'Ler artigo':'Read article'} ${ico('arrow')}</span></div></a></article>`).join(''):`<article class="post-card post-card-empty" style="grid-column:1/-1"><div class="post-card-body"><div class="post-date">CarusMKT</div><h2>${publicPostsError?(lang==='pt'?'Não foi possível carregar os artigos. Tente atualizar a página.':'Could not load articles. Please refresh the page.'):(publicPosts===null?(lang==='pt'?'Carregando artigos…':'Loading articles…'):(lang==='pt'?'Em breve, novas ideias por aqui.':'New ideas are coming soon.'))}</h2></div></article>`}</div></section><dialog class="post-dialog" id="post-dialog" aria-labelledby="post-dialog-title"><div class="post-dialog-header"><button class="post-dialog-close round-btn" type="button" aria-label="${lang==='pt'?'Fechar artigo':'Close article'}">${ico('x')}</button></div><div class="post-dialog-content" id="post-dialog-content"></div></dialog></main>`;
+  };
   const admin = () => { const pt=lang==='pt'; const theme=document.documentElement.dataset.theme || 'light'; return `<main class="admin-studio">
     <header class="admin-topbar"><a class="admin-brand" href="index.html" aria-label="CarusMKT"><img src="assets/images/carusmktlogo.svg" alt="CarusMKT"><span>${pt?'Estúdio editorial':'Editorial studio'}</span></a><div class="admin-top-actions"><span class="autosave-state" id="autosave-state">${adminIco('check')} ${pt?'Tudo salvo':'All saved'}</span><button class="admin-icon-btn admin-library-toggle" id="library-toggle" aria-label="${pt?'Abrir artigos':'Open articles'}" title="${pt?'Abrir artigos':'Open articles'}">${adminIco('list')}</button><a class="admin-icon-btn" href="blog.html" aria-label="${pt?'Abrir blog':'Open blog'}" title="${pt?'Abrir blog':'Open blog'}">${adminIco('external')}</a><button class="admin-icon-btn" id="theme-toggle" aria-label="${pt?'Alternar tema':'Toggle theme'}">${ico(theme==='dark'?'moon':'sun')}</button><button class="lang admin-lang" id="lang-toggle">${pt?'EN':'PT'}</button></div></header>
     <div class="admin-workspace">
@@ -177,7 +181,38 @@ const servicesPage = () => `<main><section class="page-hero services-page-hero">
       flip.addEventListener('pointerleave',resetTilt);
       flip.addEventListener('pointercancel',resetTilt);
     });
-    document.querySelectorAll('[data-post]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();const p=(publicPosts||[]).find(x=>x.id===a.dataset.post&&x.published);if(!p)return;location.hash=p.id;document.getElementById('post-reader').innerHTML=`<article class="article blog-article"><div class="post-date">${escapeHTML(p.category||'CarusMKT')} · ${new Date(p.date).toLocaleDateString(lang==='pt'?'pt-BR':'en-US',{day:'2-digit',month:'long',year:'numeric'})}</div><h1 class="h1">${escapeHTML(p.title)}</h1>${p.excerpt?`<p class="blog-article-lead">${escapeHTML(p.excerpt)}</p>`:''}${p.image?`<img class="blog-article-cover" src="${escapeHTML(p.image)}" alt="">`:''}<div>${markdown(p.content,p.inlineImages||{})}</div>${sourcesMarkup(p.sources||[])}</article>`;document.getElementById('post-reader').scrollIntoView({behavior:'smooth'});}));
+    if(page==='blog'){
+      const dialog=document.getElementById('post-dialog');
+      const closeButton=dialog.querySelector('.post-dialog-close');
+      const syncPost=()=>{
+        let id='';
+        try{id=decodeURIComponent(location.hash.slice(1));}catch{}
+        const p=(publicPosts||[]).find(post=>post.id===id&&post.published);
+        if(!p){if(dialog.open)dialog.close();return;}
+        document.getElementById('post-dialog-content').innerHTML=`<article class="article blog-article"><div class="post-date">${escapeHTML(p.category||'CarusMKT')} · ${new Date(p.date).toLocaleDateString(lang==='pt'?'pt-BR':'en-US',{day:'2-digit',month:'long',year:'numeric'})}</div><h1 class="h1" id="post-dialog-title">${escapeHTML(p.title)}</h1>${p.excerpt?`<p class="blog-article-lead">${escapeHTML(p.excerpt)}</p>`:''}${p.image?`<img class="blog-article-cover" src="${escapeHTML(p.image)}" alt="">`:''}<div>${markdown(p.content,p.inlineImages||{})}</div>${sourcesMarkup(p.sources||[])}</article>`;
+        if(!dialog.open)dialog.showModal();
+        dialog.scrollTop=0;
+        closeButton.focus();
+      };
+      window.__syncCarusPost=syncPost;
+      if(!window.__carusPostHashBound){
+        window.addEventListener('hashchange',()=>window.__syncCarusPost?.());
+        window.__carusPostHashBound=true;
+      }
+      document.querySelectorAll('[data-post]').forEach(link=>link.addEventListener('click',event=>{
+        event.preventDefault();
+        const hash=`#${encodeURIComponent(link.dataset.post)}`;
+        if(location.hash===hash)syncPost();else location.hash=hash;
+      }));
+      closeButton.addEventListener('click',()=>dialog.close());
+      dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close();});
+      dialog.addEventListener('close',()=>{
+        if(location.hash && (publicPosts||[]).some(post=>`#${encodeURIComponent(post.id)}`===location.hash)){
+          history.replaceState(null,'',location.pathname+location.search);
+        }
+      });
+      if(publicPosts!==null)syncPost();
+    }
     const updateNav=()=>{
       const header=document.querySelector('.site-header');
       const nav=document.querySelector('.site-header .nav');
@@ -220,7 +255,7 @@ const servicesPage = () => `<main><section class="page-hero services-page-hero">
     if(page==='admin') bindAdmin();
     if(page==='blog' && publicPosts===null && !publicPostsLoading){
       publicPostsLoading=true;
-      CarusBlogStore.loadPublicPosts().then(posts=>{publicPosts=posts;render();if(location.hash){document.querySelector(`[data-post="${CSS.escape(decodeURIComponent(location.hash.slice(1)))}"]`)?.click();}}).catch(()=>{publicPosts=[];publicPostsError=true;render();});
+      CarusBlogStore.loadPublicPosts().then(posts=>{publicPosts=posts;render();}).catch(()=>{publicPosts=[];publicPostsError=true;render();});
     }
   }
   function bindAdmin(){
