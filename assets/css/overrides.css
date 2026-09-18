@@ -1250,17 +1250,38 @@ html[data-theme="dark"] .values-wallet-card-2 { color: var(--paper); }
 .post-card-action { margin-top: auto; pointer-events: none; }
 .post-card-link:hover .post-card-action { border-color: var(--green); color: var(--green); }
 
-.post-dialog { width: min(860px, calc(100% - 32px)); max-width: none; max-height: min(90vh, 900px); padding: 0; border: 1px solid var(--line); border-radius: 22px; background: var(--card); color: var(--ink); box-shadow: 0 28px 90px #0005; overflow-y: auto; }
+.post-dialog { width: min(860px, calc(100% - 32px)); max-width: none; max-height: min(90vh, 900px); padding: 0; border: 0; border-radius: 22px; background: var(--card); color: var(--ink); box-shadow: 0 28px 90px #0005; overflow-y: auto; }
+.post-dialog[open] { animation: post-dialog-enter 300ms cubic-bezier(.2,.8,.2,1) both; }
+.post-dialog[open].is-closing { animation: post-dialog-exit 220ms ease-in both; }
 .post-dialog::backdrop { background: #0d1511ae; backdrop-filter: blur(5px); }
-.post-dialog-header { position: sticky; top: 0; z-index: 1; display: flex; justify-content: flex-end; padding: 14px 20px 0; background: var(--card); }
-.post-dialog-close { background: var(--mist); flex: none; }
-.post-dialog-content { padding: 0 clamp(22px, 5vw, 56px) 44px; }
+.post-dialog[open]::backdrop { animation: post-backdrop-enter 300ms ease-out both; }
+.post-dialog[open].is-closing::backdrop { animation: post-backdrop-exit 220ms ease-in both; }
+.post-dialog-header { position: sticky; top: 0; z-index: 1; height: 0; }
+.post-dialog-close { position: absolute; top: 16px; right: 18px; background: color-mix(in srgb, var(--card) 92%, transparent); box-shadow: 0 2px 12px #0003; }
+.post-dialog-content { padding: 0 0 44px; }
 .post-dialog .blog-article { max-width: none; margin: 0; }
-.post-dialog .blog-article > .h1 { font-size: clamp(2.2rem, 6vw, 4.5rem); line-height: 1.1; overflow-wrap: anywhere; }
-.post-dialog .blog-article-cover { display: block; height: auto; max-height: 460px; }
+.post-dialog .blog-article-cover { display: block; width: 100%; height: auto; max-height: 430px; margin: 0; border-radius: 0; object-fit: cover; }
+.post-dialog .blog-article-details,
+.post-dialog .blog-article-body { padding-inline: clamp(22px, 5vw, 56px); }
+.post-dialog .blog-article-details { padding-top: 36px; }
+.post-dialog .blog-article-details > .h1 { margin: 14px 0 20px; font-size: clamp(2.1rem, 4vw, 3.6rem); line-height: 1.1; overflow-wrap: anywhere; }
+.post-dialog .blog-article-lead { max-width: 720px; margin: 0 0 30px; }
+.post-dialog .blog-article-body > :first-child { margin-top: 0; }
 .post-dialog .article-sources { padding-bottom: 0; }
+@keyframes post-dialog-enter { from { opacity: 0; transform: translateY(18px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes post-dialog-exit { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(10px) scale(.99); } }
+@keyframes post-backdrop-enter { from { opacity: 0; } to { opacity: 1; } }
+@keyframes post-backdrop-exit { from { opacity: 1; } to { opacity: 0; } }
 @media (max-width: 600px) {
   .post-card-body { padding: 20px; }
   .post-dialog { max-height: 94vh; border-radius: 16px; }
-  .post-dialog-header { padding: 10px 12px 0; }
+  .post-dialog-close { top: 12px; right: 12px; }
+  .post-dialog .blog-article-cover { max-height: 300px; }
+  .post-dialog .blog-article-details { padding-top: 28px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .post-dialog[open],
+  .post-dialog[open].is-closing,
+  .post-dialog[open]::backdrop,
+  .post-dialog[open].is-closing::backdrop { animation: none; }
 }

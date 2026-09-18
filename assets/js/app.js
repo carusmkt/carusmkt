@@ -184,12 +184,22 @@ const servicesPage = () => `<main><section class="page-hero services-page-hero">
     if(page==='blog'){
       const dialog=document.getElementById('post-dialog');
       const closeButton=dialog.querySelector('.post-dialog-close');
+      let closeTimer;
+      const closePost=()=>{
+        if(!dialog.open || dialog.classList.contains('is-closing'))return;
+        if(matchMedia('(prefers-reduced-motion: reduce)').matches){dialog.close();return;}
+        dialog.classList.add('is-closing');
+        closeTimer=setTimeout(()=>{closeTimer=null;dialog.close();},220);
+      };
       const syncPost=()=>{
         let id='';
         try{id=decodeURIComponent(location.hash.slice(1));}catch{}
         const p=(publicPosts||[]).find(post=>post.id===id&&post.published);
-        if(!p){if(dialog.open)dialog.close();return;}
-        document.getElementById('post-dialog-content').innerHTML=`<article class="article blog-article"><div class="post-date">${escapeHTML(p.category||'CarusMKT')} · ${new Date(p.date).toLocaleDateString(lang==='pt'?'pt-BR':'en-US',{day:'2-digit',month:'long',year:'numeric'})}</div><h1 class="h1" id="post-dialog-title">${escapeHTML(p.title)}</h1>${p.excerpt?`<p class="blog-article-lead">${escapeHTML(p.excerpt)}</p>`:''}${p.image?`<img class="blog-article-cover" src="${escapeHTML(p.image)}" alt="">`:''}<div>${markdown(p.content,p.inlineImages||{})}</div>${sourcesMarkup(p.sources||[])}</article>`;
+        if(!p){closePost();return;}
+        clearTimeout(closeTimer);
+        closeTimer=null;
+        dialog.classList.remove('is-closing');
+        document.getElementById('post-dialog-content').innerHTML=`<article class="article blog-article">${p.image?`<img class="blog-article-cover" src="${escapeHTML(p.image)}" alt="">`:''}<div class="blog-article-details"><div class="post-date">${escapeHTML(p.category||'CarusMKT')} · ${new Date(p.date).toLocaleDateString(lang==='pt'?'pt-BR':'en-US',{day:'2-digit',month:'long',year:'numeric'})}</div><h1 class="h1" id="post-dialog-title">${escapeHTML(p.title)}</h1>${p.excerpt?`<p class="blog-article-lead">${escapeHTML(p.excerpt)}</p>`:''}</div><div class="blog-article-body">${markdown(p.content,p.inlineImages||{})}${sourcesMarkup(p.sources||[])}</div></article>`;
         if(!dialog.open)dialog.showModal();
         dialog.scrollTop=0;
         closeButton.focus();
@@ -204,9 +214,11 @@ const servicesPage = () => `<main><section class="page-hero services-page-hero">
         const hash=`#${encodeURIComponent(link.dataset.post)}`;
         if(location.hash===hash)syncPost();else location.hash=hash;
       }));
-      closeButton.addEventListener('click',()=>dialog.close());
-      dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close();});
+      closeButton.addEventListener('click',closePost);
+      dialog.addEventListener('click',event=>{if(event.target===dialog)closePost();});
+      dialog.addEventListener('cancel',event=>{event.preventDefault();closePost();});
       dialog.addEventListener('close',()=>{
+        dialog.classList.remove('is-closing');
         if(location.hash && (publicPosts||[]).some(post=>`#${encodeURIComponent(post.id)}`===location.hash)){
           history.replaceState(null,'',location.pathname+location.search);
         }
