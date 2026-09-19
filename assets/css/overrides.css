@@ -1288,3 +1288,21 @@ html[data-theme="dark"] .values-wallet-card-2 { color: var(--paper); }
   .post-dialog[open]::backdrop,
   .post-dialog[open].is-closing::backdrop { animation: none; }
 }
+.contact-link {
+  display: block;
+  color: inherit;
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.contact-link:hover {
+  transform: translateY(-4px);
+  border-color: var(--sage);
+  box-shadow: var(--shadow);
+}
+.contact-link p {
+  color: var(--green);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+@media (min-width: 700px) {
+  .contact-links { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
